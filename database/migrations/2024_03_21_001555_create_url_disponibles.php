@@ -12,7 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('url_disponibles', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements('id_url_disponible');
+            $table->string('short_url', 3);
+            $table->string('url_disponible', 255)->nullable();
+            $table->boolean('disponible')->default(true);
             $table->timestamps();
         });
     }
