@@ -1,8 +1,6 @@
 <?php
-
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -21,6 +19,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'correo', // Agrega 'correo' al fillable para que pueda ser asignado masivamente
+        'persona_id' // Agrega 'persona_id' al fillable para que pueda ser asignado masivamente
     ];
 
     /**
@@ -42,4 +42,12 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    /**
+     * Get the persona that belongs to this user.
+     */
+    public function persona()
+    {
+        return $this->belongsTo(Persona::class);
+    }
 }
