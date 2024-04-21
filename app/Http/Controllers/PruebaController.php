@@ -74,14 +74,7 @@ class PruebaController extends Controller
     {
 
     
-        // Configurar el proveedor de autenticación de Google
-        $provider = new Google([
-            'clientId'     => '276581705346-vjimpko04q6qh7e1l0gcsb435prgh0ek.apps.googleusercontent.com',
-            'clientSecret' => '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',
-            'redirectUri'  => 'http://localhost:8000/api/validartoken',
-            'accessType'   => 'offline',
-        ]);
-
+    
         
         // Generar una URL de autorización de Google    
         $authUrl = $provider->getAuthorizationUrl([
