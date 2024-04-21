@@ -23,15 +23,6 @@ class PruebaController extends Controller
             return response()->json(['error' => 'Código de autorización no proporcionado'], 400);
         }
 
-        // Configurar el proveedor de autenticación de Google
-        $provider = new Google([
-            'clientId'     => '276581705346-vjimpko04q6qh7e1l0gcsb435prgh0ek.apps.googleusercontent.com',
-            'clientSecret' => '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',
-             'redirectUri'  => 'http://localhost:8000/api/validartoken',
-             'accessType'   => 'offline',
-            // 'redirectUri'  => 'http://localhost:3000/login',
-
-        ]);
 
         try {
             // Intercambiar el código de autorización por un token de acceso
