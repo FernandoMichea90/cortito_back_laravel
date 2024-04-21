@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use League\OAuth2\Client\Provider\Google;
 use Illuminate\Support\Facades\Log;
+
 class PruebaController extends Controller
 {
     /**
@@ -24,6 +25,13 @@ class PruebaController extends Controller
         }
 
 
+        $provider = new Google([
+            'clientId'     => env('GOOGLE_CLIENT_ID'),
+            'clientSecret' => env('GOOGLE_CLIENT_SECRET'),
+            'redirectUri'  => env('GOOGLE_REDIRECT_URI'),
+            'accessType'   => env('GOOGLE_ACCESS_TYPE'),
+        ]);
+
         try {
             // Intercambiar el código de autorización por un token de acceso
             $accessToken = $provider->getAccessToken('authorization_code', [
@@ -39,30 +47,30 @@ class PruebaController extends Controller
             // Usar el AccessToken para obtener los datos del usuario
             $resourceOwner = $provider->getResourceOwner($accessToken);
             $user = $resourceOwner->toArray();
-            
-            // verificar si existe el usuario 
-            $existingUser=User::where('email',$user['email'])->first();
-            
-            Log::info('usuario'.json_encode($existingUser));
 
-            if(!$existingUser){
+            // verificar si existe el usuario 
+            $existingUser = User::where('email', $user['email'])->first();
+
+            Log::info('usuario' . json_encode($existingUser));
+
+            if (!$existingUser) {
                 // crear persona 
-                $persona=new Persona();
-                $persona->nombre=$user['given_name'];
-                $persona->apellido=$user['family_name'];
+                $persona = new Persona();
+                $persona->nombre = $user['given_name'];
+                $persona->apellido = $user['family_name'];
                 $persona->save();
 
                 // crear clase de usuarios 
-                $usuario=new User();
-                $usuario->name=$user['name'];
-                $usuario->email=$user['email'];
-                $usuario->persona()->associate($persona); 
+                $usuario = new User();
+                $usuario->name = $user['name'];
+                $usuario->email = $user['email'];
+                $usuario->persona()->associate($persona);
                 $usuario->save();
             }
 
 
             // Devolver los datos del usuario y el refreshToken
-            
+
             return redirect('http://localhost:3000/#access_token=' . $token);
         } catch (\Exception $e) {
             Log::info('Ocurrió un error', ['exception' => $e]);
@@ -73,9 +81,15 @@ class PruebaController extends Controller
     public function redirectToGoogle(Request $request)
     {
 
-    
-    
-        
+
+
+        $provider = new Google([
+            'clientId'     => env('GOOGLE_CLIENT_ID'),
+            'clientSecret' => env('GOOGLE_CLIENT_SECRET'),
+            'redirectUri'  => env('GOOGLE_REDIRECT_URI'),
+            'accessType'   => env('GOOGLE_ACCESS_TYPE'),
+        ]);
+
         // Generar una URL de autorización de Google    
         $authUrl = $provider->getAuthorizationUrl([
             'scope' => ['email', 'profile'],
