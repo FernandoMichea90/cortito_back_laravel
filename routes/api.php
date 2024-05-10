@@ -58,5 +58,5 @@ Route::middleware(GoogleAuthMiddleware::class)->group(function () {
 Route::get('/authgoogle', [PruebaController::class, 'redirectToGoogle']);
 // validar el access token  de google y redireccionar al frontend
 Route::get('/validartoken', [PruebaController::class, 'validar']);
-// refresh token
+// refresh token:: valida el token actual y en caso de que sea invalido lo refresca.
 Route::get('/refreshtoken',[PruebaController::class,'refreshtoken']);
