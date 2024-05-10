@@ -132,46 +132,7 @@ class PruebaController extends Controller
     }
 
 
-    /**
-     * @param \Illuminate\Http\Request
-     * @return \Illuminate\Http\Response
-     */
-    public function validar_prueba(Request $request)
-    {
-        $client = new Client();
-        // Obtener el código de autorización de la URL
-        $code = $request->input('code');        // Verificar si se proporcionó el código de autorización
-        if (!$code) {
-            return response()->json(['error' => 'Código de autorización no proporcionado'], 400);
-        }
-
-        // Registro de todas las variables env utilizadas en la solicitud
-        Log::info('CLIENT_ID: ' . env('CLIENT_ID'));
-        Log::info('CLIENT_SECRET: ' . env('CLIENT_SECRET'));
-        Log::info('REDIRECT_URI: ' . env('REDIRECT_URI'));
-        Log::info('ACCESS_TYPE: ' . env('ACCESS_TYPE'));
-
-
-        try {
-
-            $response = $client->post('https://oauth2.googleapis.com/token', [
-                'form_params' => [
-                    'code' =>  $code,
-                    'client_id' => env('CLIENT_ID'),
-                    'client_secret' => env('CLIENT_SECRET'),
-                    'redirect_uri' => env('REDIRECT_URI'),
-                    'grant_type' => 'authorization_code',
-                ],
-            ]);
-
-            $data = json_decode($response->getBody(), true);
-            return response()->json(['respuesta' => $data]);
-        } catch (\Exception $ex) {
-
-            return response()->json(['error' => $ex->getMessage(), 'info' => 'Error al intercambiar el código de autorización por el token de acceso'], 500);
-        }
-    }
-
+   
 
     /**
      * @param \Illuminate\Http\Request
@@ -210,7 +171,7 @@ class PruebaController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function validarToken(Request $request)
+    public function refreshToken(Request $request)
     {
 
         $request->validate([

@@ -56,7 +56,8 @@ Route::middleware(GoogleAuthMiddleware::class)->group(function () {
 // Rutas para el controlador PruebaController
 Route::get('/authgoogle', [PruebaController::class, 'redirectToGoogle']);
 Route::post('/verifytoken',[PruebaController::class,'validarToken']);
+Route::get('/refreshtoken',[PruebaController::class,'refreshtoken']);
+
 //---------------------------------------------------------------------------
 Route::get('/validartokenprueba', [PruebaController::class, 'validar_prueba']);
 Route::get('/validartoken', [PruebaController::class, 'validar']);
-Route::get('/refreshtoken',[PruebaController::class,'refreshtoken']);
