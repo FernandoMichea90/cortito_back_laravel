@@ -14,6 +14,52 @@ use Exception;
 
 class PruebaController extends Controller
 {
+
+
+
+    public function redirectToGoogle(Request $request)
+    {
+
+        // create client 
+        $client = new Client();
+        // Obtener el valor del parámetro 'view' desde la solicitud
+        $view = $request->input('view');
+
+        // Verificar si el parámetro 'view' está vacío o no se ha proporcionado
+        if ($view === null || $view === '') {
+            // Si está vacío, establecer $view en false
+            $view = true;
+        }
+        try {
+
+            // Construir la consulta de URL
+            $queryParams = [
+                'scope' => 'openid email profile',
+                'access_type' => 'offline',
+                'include_granted_scopes' => 'true',
+                'response_type' => 'code',
+                'redirect_uri' => env('REDIRECT_URI'),
+                'client_id' => env('CLIENT_ID'),
+            ];
+
+            $authUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' . http_build_query($queryParams);
+
+            // Redirigir al usuario a la URL de autorización de Google
+            // return redirect($url);
+
+        } catch (\Exception $ex) {
+            response()->json(['error' => 'ha ocurrido un error', 'error_info' => $ex]);
+        }
+
+        if ($view) {
+            // Redirigir al usuario a la página de autenticación de Google
+            return redirect()->away($authUrl);
+        } else {
+            return $authUrl;
+        }
+    }
+
+    
     /**
      * @param \Illuminate\Http\Request
      * @return \Illuminate\Http\Response
@@ -89,81 +135,11 @@ class PruebaController extends Controller
         }
     }
 
-    public function redirectToGoogle(Request $request)
-    {
-
-        // create client 
-        $client = new Client();
-        // Obtener el valor del parámetro 'view' desde la solicitud
-        $view = $request->input('view');
-
-        // Verificar si el parámetro 'view' está vacío o no se ha proporcionado
-        if ($view === null || $view === '') {
-            // Si está vacío, establecer $view en false
-            $view = true;
-        }
-        try {
-
-            // Construir la consulta de URL
-            $queryParams = [
-                'scope' => 'openid email profile',
-                'access_type' => 'offline',
-                'include_granted_scopes' => 'true',
-                'response_type' => 'code',
-                'redirect_uri' => env('REDIRECT_URI'),
-                'client_id' => env('CLIENT_ID'),
-            ];
-
-            $authUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' . http_build_query($queryParams);
-
-            // Redirigir al usuario a la URL de autorización de Google
-            // return redirect($url);
-
-        } catch (\Exception $ex) {
-            response()->json(['error' => 'ha ocurrido un error', 'error_info' => $ex]);
-        }
-
-        if ($view) {
-            // Redirigir al usuario a la página de autenticación de Google
-            return redirect()->away($authUrl);
-        } else {
-            return $authUrl;
-        }
-    }
-
+    
 
    
 
-    /**
-     * @param \Illuminate\Http\Request
-     * @return \Illuminate\Http\Response
-     */
-    public function refreshToken(Request $request)
-    {
-
-        $client = new Client();
-        $refresh_token = $request->input('refresh_token');
-        if (!$refresh_token) {
-            return response()->json(['error' => 'esto es un error'], 400);
-        }
-        try {
-
-            $response = $client->post('https://oauth2.googleapis.com/token', [
-                'form_params' => [
-                    'refresh_token' => $refresh_token,
-                    'client_id' => env('CLIENT_ID'),
-                    'client_secret' => env('CLIENT_SECRET'),
-                    'grant_type' => 'refresh_token'
-                ]
-            ]);
-
-            $data = json_decode($response->getBody(), true);
-            return response()->json(['respuesta' => $data], 200);
-        } catch (\Exception $ex) {
-
-            return response()->json(['error' => 'ha ocurrido un error', 'error_msj' => $ex], 400);
-        }
-    }
+    
 
 
     /**

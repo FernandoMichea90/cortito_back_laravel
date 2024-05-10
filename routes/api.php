@@ -54,10 +54,9 @@ Route::middleware(GoogleAuthMiddleware::class)->group(function () {
 });
 
 // Rutas para el controlador PruebaController
+// Re direccionar google
 Route::get('/authgoogle', [PruebaController::class, 'redirectToGoogle']);
-Route::post('/verifytoken',[PruebaController::class,'validarToken']);
-Route::get('/refreshtoken',[PruebaController::class,'refreshtoken']);
-
-//---------------------------------------------------------------------------
-Route::get('/validartokenprueba', [PruebaController::class, 'validar_prueba']);
+// validar el access token  de google y redireccionar al frontend
 Route::get('/validartoken', [PruebaController::class, 'validar']);
+// refresh token
+Route::get('/refreshtoken',[PruebaController::class,'refreshtoken']);
