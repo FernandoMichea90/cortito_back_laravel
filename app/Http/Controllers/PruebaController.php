@@ -20,15 +20,23 @@ class PruebaController extends Controller
     public function redirectToGoogle(Request $request)
     {
 
-        // create client 
-        $client = new Client();
         // Obtener el valor del parámetro 'view' desde la solicitud
         $view = $request->input('view');
+         // Obtener el valor del parámetro 'Redirect Url' desde la solicitud
+        $redirect_url = $request->input('redirect_url');
+
+         // Verificar si el parámetro 'redirect_url' está vacío o no se ha proporcionado
+         if ($redirect_url === null || $redirect_url === '') {
+            // Si está vacío, establecer $redirect_url en false
+            $redirect_url = null;
+        }
+
+
 
         // Verificar si el parámetro 'view' está vacío o no se ha proporcionado
         if ($view === null || $view === '') {
             // Si está vacío, establecer $view en false
-            $view = true;
+            $view = false;
         }
         try {
 
@@ -42,19 +50,21 @@ class PruebaController extends Controller
                 'client_id' => env('CLIENT_ID'),
             ];
 
+
             $authUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' . http_build_query($queryParams);
 
             // Redirigir al usuario a la URL de autorización de Google
             // return redirect($url);
 
         } catch (\Exception $ex) {
+            Log::error("HA OCURRIDO UN ERROR ". $ex);
             response()->json(['error' => 'ha ocurrido un error', 'error_info' => $ex]);
         }
 
         if ($view) {
             // Redirigir al usuario a la página de autenticación de Google
             return redirect()->away($authUrl);
-        } else {
+        } else {    
             return $authUrl;
         }
     }
@@ -73,12 +83,18 @@ class PruebaController extends Controller
             return response()->json(['error' => 'Código de autorización no proporcionado'], 400);
         }
 
+        Log::info(__LINE__.' '.__CLASS__);
+
+
         $provider = new Google([
             'clientId'     => env('CLIENT_ID'),
             'clientSecret' => env('CLIENT_SECRET'),
             'redirectUri'  => env('REDIRECT_URI'),
-            'grant_type'   => 'authorization_code',
-        ]);
+            'accessType'   => 'offline'
+            ]);
+
+
+        Log::info(__LINE__.' '.__CLASS__);
 
         try {
             // Intercambiar el código de autorización por un token de acceso
@@ -151,17 +167,21 @@ class PruebaController extends Controller
     {
 
         $request->validate([
-            'token' => 'required|string', 'email' => 'required|string'
+            'token' => 'required|string'
         ]);
+
         $token = $request->token;
         $email = $request->email;
-
+        Log::info($token);
         $token = trim($token, '"');
+
         $client = new Client();
         try {
             $client->get('https://www.googleapis.com/oauth2/v3/tokeninfo', [
                 'query' => ['access_token' => $token]
             ]);
+            Log::info('llego hasta aca '.__LINE__);
+
             // si el token es valido no genera error, si es invalido genera un error -> catch
             return response()->json(['token' => $token, 'mensajes' => 'se recupera el token'], 200);
         } catch (\Exception $ex) {
