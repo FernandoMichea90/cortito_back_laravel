@@ -174,7 +174,7 @@ class PruebaController extends Controller
         $email = $request->email;
         Log::info($token);
         $token = trim($token, '"');
-
+        
         $client = new Client();
         try {
             $client->get('https://www.googleapis.com/oauth2/v3/tokeninfo', [
